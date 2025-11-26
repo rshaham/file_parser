@@ -1,0 +1,39 @@
+{
+    "name": "SimpleMesh",
+    "header": [
+        {
+            "name": "Magic",
+            "type": "uint32",
+            "value": 1213418835
+        },
+        {
+            "name": "Version",
+            "type": "uint32",
+            "value": 1
+        },
+        {
+            "name": "Vertices",
+            "type": "uint32",
+            "value": "variable"
+        },
+        {
+            "name": "Triangles",
+            "type": "uint32",
+            "value": "variable"
+        }
+    ],
+    "arrays": [
+        {
+            "name": "VertexArray",
+            "count_field": "Vertices",
+            "type": "float3",
+            "stride": 12
+        },
+        {
+            "name": "TriangleArray",
+            "count_field": "Triangles",
+            "type": "uint32",
+            "stride": 12
+        }
+    ]
+}

@@ -22,12 +22,16 @@ experiments/generated/build/
 experiments/generated/generated_parser.cpp
 experiments/generated/parser.exe
 experiments/generated/CMakeLists.txt
+experiments/logs/
+experiments/data/
 
 # Generated Data
 data/*.smsh
+data/random/
 
 # OS / Editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+

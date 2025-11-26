@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-
 // Basic Analysis Structures
 struct AnalysisResult {
   std::string filename;
@@ -18,6 +17,20 @@ struct AnalysisResult {
 };
 
 // Helper: Calculate Shannon Entropy of a buffer
+//
+// Shannon Entropy measures the randomness or information density of data.
+// Formula: H(X) = -sum(p(x) * log2(p(x)))
+// Range: 0.0 (all bytes are same) to 8.0 (all bytes are random/uniform)
+//
+// Interpretation for Reverse Engineering:
+// - Low Entropy (< 3.0): Text, padding (zeros), or sparse data.
+// - Medium Entropy (3.0 - 6.0): Code, structured data, or repeating patterns.
+// - High Entropy (> 7.0): Compressed data, encrypted data, or dense
+// floating-point arrays.
+//
+// We calculate this per 64-byte chunk to visualize the "texture" of the file.
+// For example, a file might start with low entropy (header) and switch to high
+// entropy (mesh data).
 float calculateEntropy(const std::vector<uint8_t> &data) {
   if (data.empty())
     return 0.0f;
@@ -39,6 +52,15 @@ float calculateEntropy(const std::vector<uint8_t> &data) {
 }
 
 // Helper: Check alignment
+//
+// Detects if data is aligned to 2, 4, or 8 byte boundaries.
+// This is crucial for identifying arrays of integers or floats.
+//
+// Heuristic:
+// We iterate through the file at the given stride (e.g., 4 bytes).
+// If the values interpreted at these offsets look like "small integers"
+// (indices, counts), we increment the score. A high score suggests a structured
+// array.
 void checkAlignment(const std::vector<uint8_t> &data, AnalysisResult &result) {
   std::vector<int> alignments = {2, 4, 8};
 
@@ -130,6 +152,13 @@ void printAnalysis(const AnalysisResult &result) {
 }
 
 // Helper: Differential Analysis
+//
+// Compares two files to identify structural differences.
+// Currently, we only compare file sizes to detect "strides".
+//
+// Usage:
+// If File A has 10 items and File B has 20 items, and Size(B) - Size(A) = 120
+// bytes, then we can infer that each item is likely 12 bytes (120 / 10).
 void compareFiles(const AnalysisResult &r1, const AnalysisResult &r2) {
   std::cout << "\nDifferential Analysis (" << r1.filename << " vs "
             << r2.filename << "):" << std::endl;

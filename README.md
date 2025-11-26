@@ -6,9 +6,10 @@ This project explores the sample efficiency of LLM agents in reverse engineering
 
 - `data/`: Generated test files (`SimpleMesh` format).
 - `src/cpp_analyzer/`: C++ tool for entropy, alignment, and differential analysis.
-- `src/agent/`: Python agent that orchestrates the analysis and uses an LLM to hypothesize structure.
+- `src/experiments/`: Experiment runner and logs.
+- `src/agent/`: Python agent library (orchestrates analysis and LLM).
 - `src/baseline/`: Heuristic-based analyzer for comparison.
-- `src/generator/`: Script to generate synthetic test data.
+- `src/generator/`: Scripts to generate synthetic test data.
 
 ## Prerequisites
 
@@ -47,16 +48,40 @@ This project explores the sample efficiency of LLM agents in reverse engineering
 
 ## Usage
 
-### Running the Agent
+### Running Experiments
 
-The agent analyzes files, queries Gemini for a hypothesis, generates a C++ parser, and validates it.
+Use the `experiment_runner.py` script to run experiments.
 
-1.  Ensure `.env` is configured with your API Key.
+**1. Random Format Experiment (Phase 2)**
+Generates random binary formats ("unknowns") and tests the agent's ability to reverse engineer them.
 
-2.  Run the Agent:
-    ```bash
-    python src/agent/agent.py
-    ```
+```bash
+python src/experiments/experiment_runner.py --mode random --count 1
+```
+- `--count`: Number of different random formats to generate and test.
+
+**2. Existing Format Experiment**
+Run on existing files (e.g., the `SimpleMesh` data generated in Setup).
+
+```bash
+python src/experiments/experiment_runner.py --mode existing --data_dir data
+```
+
+### Generating Random Formats
+
+To test generalization, you can generate synthetic "unknown" formats standalone:
+
+```bash
+python src/generator/random_generator.py
+```
+
+### Experiment Logs
+
+Results are logged to `experiments/logs/` in JSONL format. Each entry contains:
+- `analysis_summary`: C++ analysis output.
+- `hypothesis`: The LLM's reasoning.
+- `generated_code`: The C++ parser code.
+- `validation_score`: Accuracy against the ground truth spec.
 
 ### Running the Baseline
 
