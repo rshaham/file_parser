@@ -14,10 +14,11 @@ class AnalyzerWrapper:
             result = subprocess.run(
                 [self.analyzer_path, file_path],
                 capture_output=True,
-                text=True,
+                text=False,
                 check=True
             )
-            return result.stdout
+            
+            return result.stdout.decode('utf-8', errors='replace')
         except subprocess.CalledProcessError as e:
             print(f"Error running analyzer: {e}")
             return ""
@@ -74,12 +75,9 @@ struct SimpleMesh {
                - Accepts a filename as a command line argument.
                - Opens the file in binary mode.
                - Reads the header.
-               - Prints the following fields to stdout in this EXACT format:
-                 Magic: <integer value>
-                 Version: <integer value>
-                 Vertices: <integer value>
-                 Triangles: <integer value>
-            
+               - Prints ALL fields found in the header to stdout in the format:
+                 FieldName: <value>
+               
             Output ONLY valid C++ code. No markdown, no explanations.
             """
             full_prompt = f"{system_instruction}\n\n{prompt}"
@@ -158,9 +156,10 @@ add_executable(parser "{os.path.basename(source_path)}")
 
         # Run
         try:
-            result = subprocess.run([real_exe_path, test_file], capture_output=True, text=True, check=True)
-            print(f"Parser Output: {result.stdout}")
-            return True, result.stdout
+            result = subprocess.run([real_exe_path, test_file], capture_output=True, text=False, check=True)
+            output_text = result.stdout.decode('utf-8', errors='replace')
+            print(f"Parser Output: {output_text}")
+            return True, output_text
         except subprocess.CalledProcessError:
             return False, ""
 
